@@ -15,10 +15,10 @@ export class TodoListComponent {
 
   constructor() {}
 
-  onCompleteChange(toDo: ToDo, change: MatCheckboxChange) {
+  onCompleteChange(changedToDo: ToDo) {
     this.toDoChange.emit({
-      ...toDo,
-      complete: change.checked,
+      ...changedToDo,
+      complete: !changedToDo.complete,
     });
   }
 }

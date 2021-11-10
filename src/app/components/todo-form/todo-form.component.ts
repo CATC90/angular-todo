@@ -33,7 +33,7 @@ export class TodoFormComponent implements OnDestroy, OnInit {
   ngOnInit() {
     this.task = new FormControl();
     this.task.valueChanges
-      .pipe(debounceTime(200), takeUntil(this.unsubscribe))
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe((value) => this.toDoChange.emit({ task: value }));
   }
 }

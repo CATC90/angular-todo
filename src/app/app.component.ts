@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface ToDo {
-  id: number;
+  id: string;
   task: string;
   complete: boolean;
 }

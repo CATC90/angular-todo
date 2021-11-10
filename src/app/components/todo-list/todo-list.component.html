@@ -2,6 +2,6 @@
   <app-todo
     *ngFor="let toDo of toDos"
     [toDo]="toDo"
-    (completeChange)="onCompleteChange(toDo, $event)"
+    (completeChange)="onCompleteChange($event)"
   ></app-todo>
 </mat-list>

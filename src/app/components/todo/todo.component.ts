@@ -12,5 +12,9 @@ export class TodoComponent {
   @Input()
   toDo!: ToDo;
 
-  @Output() completeChange = new EventEmitter<MatCheckboxChange>();
+  @Output() completeChange = new EventEmitter<ToDo>();
+
+  public handleClick() {
+    this.completeChange.emit(this.toDo);
+  }
 }
