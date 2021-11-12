@@ -1,5 +1,8 @@
 <mat-list-item [class.complete]="toDo?.complete">
-  <mat-checkbox [checked]="toDo.complete" (change)="this.handleClick()">{{
-    toDo?.task
-  }}</mat-checkbox>
+  <mat-checkbox
+    [checked]="toDo.complete"
+    (click)="this.handleClick()"
+    id="todo-checkbox"
+    >{{ toDo?.task }}</mat-checkbox
+  >
 </mat-list-item>

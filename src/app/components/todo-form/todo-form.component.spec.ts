@@ -1,10 +1,21 @@
 import { TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { first } from 'rxjs';
-import { ToDo } from 'src/app/app.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { TodoFormComponent } from './todo-form.component';
 
 describe('TodoFormComponent', () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [TodoFormComponent],
+      imports: [
+        MatInputModule,
+        MatFormFieldModule,
+        FormsModule,
+        ReactiveFormsModule,
+      ],
+    }).compileComponents();
+  });
   it('should create the app', () => {
     const fixture = TestBed.createComponent(TodoFormComponent);
     const app = fixture.componentInstance;
