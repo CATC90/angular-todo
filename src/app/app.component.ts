@@ -13,11 +13,15 @@ export interface ToDo {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  private partialTodo: Partial<ToDo> = {};
+  partialTodo: Partial<ToDo> = {};
   completeToDos: Array<any> = [];
   incompleteToDos: Array<any> = [];
 
   constructor() {}
+
+  getIncompleteTodo() {
+    return this.incompleteToDos.length;
+  }
 
   addToDo() {
     const newToDo = {

@@ -59,7 +59,7 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it(`should call addToDo successfully add a todo`, async () => {
+  it(`should call addToDo successfully add a todo`, async function () {
     const testingTodo = {
       task: 'to do testing',
       id: 'testingid',
@@ -117,6 +117,50 @@ describe('AppComponent', () => {
 
     const [completeTodos] = findComponent(fixture, '#complete-todos');
     const completeTodo = completeTodos.query(By.css('input[type="checkbox"]'));
+    expect(completeTodo.properties['checked']).toBe(true);
+  });
+
+  it(`should call addToDo successfully add a todo 2`, async function () {
+    const testingTodo = {
+      task: 'to do testing',
+      id: 'testingid',
+      complete: false,
+    };
+
+    const [todoForm] = findComponent(fixture, 'app-todo-form');
+    const [addButton] = findComponent(fixture, '#add-button');
+
+    todoForm.triggerEventHandler('toDoChange', testingTodo);
+
+    fixture.detectChanges();
+
+    expect(component.partialTodo).toBe(testingTodo);
+
+    addButton.triggerEventHandler('click', null);
+
+    fixture.detectChanges();
+    expect(component.incompleteToDos.length).toBe(1);
+    fixture.detectChanges();
+
+    const [incompleteTodos] = findComponent(fixture, '#incomplete-todos');
+
+    const incompleteTodo = incompleteTodos.query(
+      By.css('input[type="checkbox"]')
+    );
+
+    expect(incompleteTodo.properties['checked']).toBe(false);
+
+    incompleteTodos
+      .query(By.css('#todo-checkbox'))
+      .triggerEventHandler('click', null);
+
+    expect(component.completeToDos.length).toBe(1);
+    fixture.detectChanges();
+
+    const [completeTodos] = findComponent(fixture, '#complete-todos');
+
+    const completeTodo = completeTodos.query(By.css('input[type="checkbox"]'));
+
     expect(completeTodo.properties['checked']).toBe(true);
   });
 });
