@@ -12,6 +12,7 @@
                 id="incomplete-todos"
                 [toDos]="toDos"
                 (toDoChange)="onCompleteToDo($event)"
+                (removeToDo)="removeTodo($event)"
               ></app-todo-list>
             </ng-container>
             <ng-template #allDone>
@@ -51,6 +52,7 @@
             id="complete-todos"
             [toDos]="completeToDos"
             (toDoChange)="onIncompleteToDo($event)"
+            (removeToDo)="removeTodo($event)"
           ></app-todo-list>
         </mat-card-content>
       </mat-card>

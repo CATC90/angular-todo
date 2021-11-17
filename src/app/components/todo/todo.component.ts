@@ -13,8 +13,13 @@ export class TodoComponent {
   toDo!: ToDo;
 
   @Output() completeChange = new EventEmitter<ToDo>();
+  @Output() remove = new EventEmitter<ToDo>();
 
   public handleClick() {
     this.completeChange.emit(this.toDo);
+  }
+
+  public handleRemove() {
+    this.remove.emit(this.toDo);
   }
 }

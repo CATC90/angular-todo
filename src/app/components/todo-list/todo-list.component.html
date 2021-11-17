@@ -4,5 +4,6 @@
     *ngFor="let toDo of toDos"
     [toDo]="toDo"
     (completeChange)="onCompleteChange($event)"
+    (remove)="onRemoveTodo($event)"
   ></app-todo>
 </mat-list>

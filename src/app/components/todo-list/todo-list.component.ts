@@ -12,8 +12,13 @@ export class TodoListComponent {
   @Input() toDos!: ToDo[];
 
   @Output() toDoChange = new EventEmitter<ToDo>();
+  @Output() removeToDo = new EventEmitter<ToDo>();
 
   constructor() {}
+
+  onRemoveTodo(removedTodo: ToDo) {
+    this.removeToDo.emit(removedTodo);
+  }
 
   onCompleteChange(changedToDo: ToDo) {
     this.toDoChange.emit({

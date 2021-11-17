@@ -15,6 +15,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSliderModule } from '@angular/material/slider';
+import { of } from 'rxjs';
+import { HttpService } from './http.service';
+import { MatIconModule } from '@angular/material/icon';
 
 export function findComponent<T>(
   fixture: ComponentFixture<T>,
@@ -48,6 +51,7 @@ describe('AppComponent', () => {
         MatCardModule,
         MatButtonModule,
         MatSliderModule,
+        MatIconModule,
       ],
     }).compileComponents();
 
@@ -120,7 +124,7 @@ describe('AppComponent', () => {
     expect(completeTodo.properties['checked']).toBe(true);
   });
 
-  it(`should call addToDo successfully add a todo 2`, async function () {
+  it(`should pass a full flow, without mock service`, async function () {
     const testingTodo = {
       task: 'to do testing',
       id: 'testingid',
@@ -130,37 +134,163 @@ describe('AppComponent', () => {
     const [todoForm] = findComponent(fixture, 'app-todo-form');
     const [addButton] = findComponent(fixture, '#add-button');
 
+    /**
+     * Triggering the event toDoChange in toDoForm which is an observable
+     * provoques that app.component add that change in partialTodo state variable
+     *  */
     todoForm.triggerEventHandler('toDoChange', testingTodo);
 
     fixture.detectChanges();
 
     expect(component.partialTodo).toBe(testingTodo);
 
+    /**
+     * Clicking the addButton provoques that app.component move the partialTodo
+     * into the incompleteTodo list with completed field as false.
+     * That change reflects in the DOM as an unchecked input checkbox
+     *  */
+
     addButton.triggerEventHandler('click', null);
 
     fixture.detectChanges();
     expect(component.incompleteToDos.length).toBe(1);
-    fixture.detectChanges();
-
     const [incompleteTodos] = findComponent(fixture, '#incomplete-todos');
-
     const incompleteTodo = incompleteTodos.query(
       By.css('input[type="checkbox"]')
     );
 
     expect(incompleteTodo.properties['checked']).toBe(false);
 
+    /**
+     * clicking a todo which is in the incomplete list
+     * remove it from that list and add to the completeTodo list
+     *  */
     incompleteTodos
       .query(By.css('#todo-checkbox'))
       .triggerEventHandler('click', null);
-
     expect(component.completeToDos.length).toBe(1);
+
     fixture.detectChanges();
 
     const [completeTodos] = findComponent(fixture, '#complete-todos');
-
     const completeTodo = completeTodos.query(By.css('input[type="checkbox"]'));
 
     expect(completeTodo.properties['checked']).toBe(true);
+
+    // cant delete without mock service
+    const [removeTodoIcon] = findComponent(fixture, '#remove-todo');
+    removeTodoIcon.triggerEventHandler('click', null);
+
+    fixture.detectChanges();
+
+    const checkboxes = findComponent(fixture, 'input[type="checkbox"]');
+
+    expect(checkboxes.length).toBe(1);
+  });
+});
+
+describe('AppComponent (service mocked)', () => {
+  let fixture: ComponentFixture<AppComponent>;
+  let component: AppComponent;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [
+        AppComponent,
+        TodoListComponent,
+        TodoComponent,
+        TodoFormComponent,
+      ],
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatCheckboxModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatListModule,
+        MatCardModule,
+        MatButtonModule,
+        MatSliderModule,
+        MatIconModule,
+      ],
+      providers: [
+        {
+          provide: HttpService,
+          useValue: { delete: () => of({ success: true }) },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it(`should pass a full flow`, async function () {
+    const testingTodo = {
+      task: 'to do testing',
+      id: 'testingid',
+      complete: false,
+    };
+
+    const [todoForm] = findComponent(fixture, 'app-todo-form');
+    const [addButton] = findComponent(fixture, '#add-button');
+
+    /**
+     * Triggering the event toDoChange in toDoForm which is an observable
+     * provoques that app.component add that change in partialTodo state variable
+     *  */
+    todoForm.triggerEventHandler('toDoChange', testingTodo);
+
+    fixture.detectChanges();
+
+    expect(component.partialTodo).toBe(testingTodo);
+
+    /**
+     * Clicking the addButton provoques that app.component move the partialTodo
+     * into the incompleteTodo list with completed field as false.
+     * That change reflects in the DOM as an unchecked input checkbox
+     *  */
+
+    addButton.triggerEventHandler('click', null);
+
+    fixture.detectChanges();
+    expect(component.incompleteToDos.length).toBe(1);
+    const [incompleteTodos] = findComponent(fixture, '#incomplete-todos');
+    const incompleteTodo = incompleteTodos.query(
+      By.css('input[type="checkbox"]')
+    );
+
+    expect(incompleteTodo.properties['checked']).toBe(false);
+
+    /**
+     * clicking a todo which is in the incomplete list
+     * remove it from that list and add to the completeTodo list
+     *  */
+    incompleteTodos
+      .query(By.css('#todo-checkbox'))
+      .triggerEventHandler('click', null);
+    expect(component.completeToDos.length).toBe(1);
+
+    fixture.detectChanges();
+
+    const [completeTodos] = findComponent(fixture, '#complete-todos');
+    const completeTodo = completeTodos.query(By.css('input[type="checkbox"]'));
+
+    expect(completeTodo.properties['checked']).toBe(true);
+
+    // Delete successfully a todo when service returns { success: true }
+    const [removeTodoIcon] = findComponent(fixture, '#remove-todo');
+    removeTodoIcon.triggerEventHandler('click', null);
+
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();
+
+      const checkboxes = findComponent(fixture, 'input[type="checkbox"]');
+      expect(checkboxes.length).toBe(0);
+    });
   });
 });
